@@ -1,4 +1,4 @@
-package archive.backend.feature.auth;
+package archive.backend.feature.auth.service.lmpl;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -7,8 +7,5 @@ import java.util.Map;
 @Mapper
 public interface AuthDAO {
 
-    /**
-     * 로그인
-     */
     Map<String, Object> login(String a);
 }

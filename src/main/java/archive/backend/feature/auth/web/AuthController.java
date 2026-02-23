@@ -1,5 +1,6 @@
-package archive.backend.feature.auth;
+package archive.backend.feature.auth.web;
 
+import archive.backend.feature.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,11 +16,6 @@ public class AuthController {
 
     private final AuthService service;
 
-    /**
-     * 로그인
-     * @param
-     * @return
-     */
     @GetMapping("/login")
     public ResponseEntity<?> login(String a) {
 
