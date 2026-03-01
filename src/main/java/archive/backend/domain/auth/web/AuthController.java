@@ -1,11 +1,10 @@
 package archive.backend.domain.auth.web;
 
 import archive.backend.domain.auth.service.AuthService;
+import archive.backend.domain.auth.service.dto.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -16,12 +15,9 @@ public class AuthController {
 
     private final AuthService service;
 
-    @GetMapping("/login")
-    public ResponseEntity<?> login(String a) {
+    @RequestMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-       return ResponseEntity
-               .status(200)
-               .header("api", "auth/login")
-               .body(Map.of("data", "result"));
+       return ResponseEntity.ok(Map.of("",""));
     }
 }
