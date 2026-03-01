@@ -1,6 +1,6 @@
-package archive.backend.feature.auth.service.lmpl;
+package archive.backend.domain.auth.service.lmpl;
 
-import archive.backend.feature.auth.service.AuthService;
+import archive.backend.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

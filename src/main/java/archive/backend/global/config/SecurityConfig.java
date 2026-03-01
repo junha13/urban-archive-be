@@ -1,5 +1,6 @@
-package archive.backend.common.config;
+package archive.backend.global.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,11 +9,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration // 컴포넌트 스캔에 적용되도록 어노테이션을 달아줍니다.
 @EnableWebSecurity // 모든 요청 URL이 스프링 시큐리티의 필터체인을 거치도록 하는 어노테이션입니다.
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    // provider 주입
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -29,6 +35,12 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    // 비밀번호 해시화 빈 등록
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     //필터체인을 거치지 않을 URL

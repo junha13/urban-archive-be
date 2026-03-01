@@ -1,6 +1,6 @@
-package archive.backend.feature.auth.web;
+package archive.backend.domain.auth.web;
 
-import archive.backend.feature.auth.service.AuthService;
+import archive.backend.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

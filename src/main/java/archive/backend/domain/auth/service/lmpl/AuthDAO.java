@@ -1,4 +1,4 @@
-package archive.backend.feature.auth.service.lmpl;
+package archive.backend.domain.auth.service.lmpl;
 
 import org.apache.ibatis.annotations.Mapper;
 

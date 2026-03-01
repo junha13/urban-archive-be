@@ -1,7 +1,7 @@
-package archive.backend.feature.panel.service.lmpl;
+package archive.backend.domain.panel.service.lmpl;
 
 
-import archive.backend.feature.panel.service.PanelService;
+import archive.backend.domain.panel.service.PanelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

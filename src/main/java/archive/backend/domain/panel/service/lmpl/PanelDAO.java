@@ -1,4 +1,4 @@
-package archive.backend.feature.panel.service.lmpl;
+package archive.backend.domain.panel.service.lmpl;
 
 import org.apache.ibatis.annotations.Mapper;
 

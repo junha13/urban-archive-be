@@ -1,6 +1,6 @@
-package archive.backend.feature.panel.web;
+package archive.backend.domain.panel.web;
 
-import archive.backend.feature.panel.service.PanelService;
+import archive.backend.domain.panel.service.PanelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
