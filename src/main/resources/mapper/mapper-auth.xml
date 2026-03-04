@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="archive.backend.domain.auth.service.impl.AuthDAO">
+    <select id="findByUserId" parameterType="String" resultType="archive.backend.domain.auth.service.UserVO">
+        select
+            user_number,
+            id,
+            password,
+            created_at
+        from tb_user
+        where 1=1
+        and id = #{userId}
+    </select>
+
+
+</mapper>

@@ -1,4 +1,4 @@
-package archive.backend.domain.auth.service.lmpl;
+package archive.backend.domain.auth.service.impl;
 
 import archive.backend.domain.auth.service.AuthService;
 import archive.backend.domain.auth.service.UserVO;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -19,13 +20,20 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> login(LoginRequest request) {
+        Map<String, String> token = new HashMap<String, String>();
         UserVO user = authDAO.findByUserId(request.getId());
 
         if (user == null) {
             // custom Exception 뱉기
         }
 
-        return Map.of("", "");
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            // custom Exception 뱉기
+        }
+
+        token.put("accessToken", "");
+
+        return token;
     }
 
 }

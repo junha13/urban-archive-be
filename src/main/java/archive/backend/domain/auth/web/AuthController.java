@@ -18,6 +18,6 @@ public class AuthController {
     @RequestMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-       return ResponseEntity.ok(Map.of("",""));
+       return ResponseEntity.ok(Map.of("result",service.login(request)));
     }
 }
