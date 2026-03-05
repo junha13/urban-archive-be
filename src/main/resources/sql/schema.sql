@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS tb_search_keyword;
 
 CREATE TABLE tb_user (
     user_number     SERIAL          PRIMARY KEY,
-    username        VARCHAR(50)     NOT NULL,
+    id              VARCHAR(50)     NOT NULL,
     password        VARCHAR(255)    NOT NULL,
     email           VARCHAR(100)    NOT NULL,
     role            VARCHAR(20)     NOT NULL,

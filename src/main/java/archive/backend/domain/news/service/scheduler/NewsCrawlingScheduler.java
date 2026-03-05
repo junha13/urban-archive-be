@@ -2,6 +2,9 @@ package archive.backend.domain.news.service.scheduler;
 
 import archive.backend.domain.news.service.NewsService;
 import archive.backend.domain.news.service.impl.NewsDAO;
+import archive.backend.global.exception.CustomException;
+import archive.backend.global.exception.errorcode.ErrorCode;
+import archive.backend.global.exception.errorcode.NewsErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,7 +15,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class NewsCrawlingSceduler {
+public class NewsCrawlingScheduler {
 
     private final WebClient webClient;
     private final NewsService newService;
@@ -36,8 +39,16 @@ public class NewsCrawlingSceduler {
                                 .build())
                         .header("X-Naver-Client-Id", "")
                         .header("X-Naver-Client-Secret", "")
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+
+                // 3. 디비에 뉴스 정보 저장 => mapper에서 uri 보고 기존 뉴스가 있으면 news 컬럼인 keywordList 에 추가하는 걸로
+
+            } catch (Exception e) {
+                throw new CustomException(NewsErrorCode.NEWS_NOT_FOUND);
             }
         }
-        // 3. 디비에 뉴스 정보 저장
+
     }
 }
