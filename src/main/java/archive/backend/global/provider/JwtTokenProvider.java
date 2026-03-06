@@ -22,7 +22,7 @@ public class JwtTokenProvider {
     // 서버 실행 시 init 문자열 키를 암호화 키로 변환
     @PostConstruct
     protected void init() {
-        Dotenv dotenv = Dotenv.load();
+        this.dotenv = Dotenv.load();
         byte[] keyBytes = dotenv.get("JWT_SECRET").getBytes(StandardCharsets.UTF_8);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -33,7 +33,7 @@ public class JwtTokenProvider {
         claims.put("role", role);
 
         Date now = new Date();
-        Date validTime = new Date(now.getTime() + dotenv.get("JWT_EXPIRATION"));
+        Date validTime = new Date(now.getTime() + Long.parseLong(dotenv.get("JWT_EXPIRATION")));
 
         return Jwts.builder()
                 .setClaims(claims) // 유저 정보
