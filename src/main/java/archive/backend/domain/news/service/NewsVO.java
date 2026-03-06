@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor
@@ -18,8 +18,9 @@ public class NewsVO {
     private String link;
     private String description;
     private LocalDate uploadAt;
+    private String keyword;
 
     @JsonFormat(pattern = "EEE, dd MMM yyyy HH:mm:ss Z", locale = "en")
-    private ZonedDateTime pubDate;
+    private OffsetDateTime pubDate;
 
 }

@@ -14,14 +14,15 @@ CREATE TABLE tb_user (
 CREATE TABLE tb_news (
     news_number     SERIAL          PRIMARY KEY,
     title           VARCHAR(255)    NOT NULL,
-    url             VARCHAR(255)    NOT NULL,
+    link            VARCHAR(255)    UNIQUE NOT NULL,
     description     TEXT            NOT NULL,
-    keywordList     TEXT            NOT NULL,
-    upload_at       DATE            NOT NULL,
-    created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
+    keyword_list    TEXT            NOT NULL,
+    pubDate         TIMESTAMP       NOT NULL,
+    upload_at       TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE tb_search_keyword (
     keyword_number  SERIAL          PRIMARY KEY,
-    keyword         VARCHAR(100)    NOT NULL
+    keyword         VARCHAR(100)    NOT NULL,
+    category        VARCHAR(100)    NOT NULL
 );
