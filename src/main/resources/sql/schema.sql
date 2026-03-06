@@ -4,11 +4,19 @@ DROP TABLE IF EXISTS tb_search_keyword;
 
 CREATE TABLE tb_user (
     user_number     SERIAL          PRIMARY KEY,
-    id              VARCHAR(50)     NOT NULL,
-    password        VARCHAR(255)    NOT NULL,
-    email           VARCHAR(100)    NOT NULL,
+    login_id        VARCHAR(50)     NOT NULL UNIQUE,
+    login_password  VARCHAR(255)    NOT NULL,
+    student_id      VARCHAR(20)     NOT NULL,
+    name            VARCHAR(50)     NOT NULL,
+    nick_name       VARCHAR(50)     ,
+    profile_image   VARCHAR(255)    ,
+    lab             VARCHAR(100)    ,
+    description     TEXT            ,
+    email           VARCHAR(100)    NOT NULL UNIQUE,
     role            VARCHAR(20)     NOT NULL,
-    created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
+    status          VARCHAR(10)     NOT NULL,
+    created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE tb_news (

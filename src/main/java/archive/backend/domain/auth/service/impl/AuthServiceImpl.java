@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
             // custom Exception 뱉기
         }
 
-        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(request.getPassword(), user.getLoginPassword())) {
             // custom Exception 뱉기
         }
 
