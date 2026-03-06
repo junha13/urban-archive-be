@@ -19,6 +19,7 @@ public class NewsVO {
     private String description;
     private LocalDate uploadAt;
     private String keyword;
+    private String Category;
 
     @JsonFormat(pattern = "EEE, dd MMM yyyy HH:mm:ss Z", locale = "en")
     private OffsetDateTime pubDate;

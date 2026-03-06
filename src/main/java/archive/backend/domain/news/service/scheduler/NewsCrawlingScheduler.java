@@ -1,5 +1,6 @@
 package archive.backend.domain.news.service.scheduler;
 
+import archive.backend.domain.news.service.KeywordVO;
 import archive.backend.domain.news.service.NewsService;
 import archive.backend.domain.news.service.dto.NewsListResponse;
 import archive.backend.domain.news.service.impl.NewsDAO;
@@ -29,18 +30,18 @@ public class NewsCrawlingScheduler {
     @Scheduled(cron = "5 * * * * *")
     public void crawlingNews() {
         // 1. 검색어를 디비에서 가져오고
-        List<String> keywordList = new ArrayList<>();
-        keywordList = newsDAO.findSearchkeyword();
+        List<KeywordVO> keywordList = new ArrayList<>();
+        keywordList = newsDAO.findSearchKeyword();
 
         // 2. 검색어마다 api 를 쏴서 뉴스를 가져오고
-        for (String keyword : keywordList) {
+        for (KeywordVO keyword : keywordList) {
             try {
                 NewsListResponse NewsList = webClient.get()
                         .uri(uriBuilder -> uriBuilder
                                 .scheme("https")
                                 .host("openapi.naver.com")
                                 .path("v1/search/news.json")
-                                .queryParam("query", keyword)
+                                .queryParam("query", keyword.getKeyword())
                                 .queryParam("display", 100)
                                 .queryParam("sort", "date")
                                 .build())

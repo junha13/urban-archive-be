@@ -17,6 +17,7 @@ CREATE TABLE tb_news (
     link            VARCHAR(255)    UNIQUE NOT NULL,
     description     TEXT            NOT NULL,
     keyword_list    TEXT            NOT NULL,
+    keyword_category    TEXT            NOT NULL,
     pubDate         TIMESTAMP       NOT NULL,
     upload_at       TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );

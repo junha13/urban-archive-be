@@ -3,25 +3,31 @@
 
 <mapper namespace="archive.backend.domain.news.service.impl.NewsDAO">
     <!--키워드 리스트 select-->
-    <select id="findSearchkeyword" resultType="String">
+    <select id="findSearchKeyword" resultType="archive.backend.domain.news.service.KeywordVO">
         select
-            keyword
+            keyword, category
         from tb_search_keyword
     </select>
 
     <insert id="insertNews" parameterType="archive.backend.domain.news.service.NewsVO">
         insert into
-            tb_news(title, link, keyword_list, description, pubDate)
+            tb_news(title, link, keyword_list, keyword_category, description, pubDate)
         values
-            (#{title}, #{link}, #{keyword}, #{description}, #{pubDate, jdbcType=OTHER})
+            (#{title}, #{link}, #{keyword}, #{category}, #{description}, #{pubDate, jdbcType=OTHER})
         on conflict (link)
         do update set
             keyword_list =
-            CASE
-                WHEN tb_news.keyword_list not like concat('%', EXCLUDED.keyword_list, '%')
-                THEN concat(tb_news.keyword_list, ', ', EXCLUDED.keyword_list)
-                ELSE tb_news.keyword_list
-            END
+                CASE
+                    WHEN tb_news.keyword_list not like concat('%', EXCLUDED.keyword_list, '%')
+                    THEN concat(tb_news.keyword_list, ', ', EXCLUDED.keyword_list)
+                    ELSE tb_news.keyword_list
+                END,
+            keyword_category =
+                CASE
+                    WHEN tb_news.keyword_category not like concat('%', EXCLUDED.keyword_category, '%')
+                    THEN concat(tb_news.keyword_category, ', ', EXCLUDED.keyword_category)
+                    ELSE tb_news.keyword_category
+                END
     </insert>
 
 </mapper>

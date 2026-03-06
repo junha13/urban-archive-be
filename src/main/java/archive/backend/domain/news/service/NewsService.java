@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface NewsService {
 
-    void insertNews(NewsListResponse newsList, String keyword);
+    void insertNews(NewsListResponse newsList, KeywordVO keyword);
+
+
 
 }
