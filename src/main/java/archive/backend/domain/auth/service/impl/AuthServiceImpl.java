@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String accessToken = jwtTokenProvider.createToken(user.getLoginId(), user.getRole());
-        
+
         // 비밀번호 지워서 보내기
         user.setLoginPassword(null);
 
