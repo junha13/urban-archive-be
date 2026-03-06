@@ -20,11 +20,28 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     public void insertNews(NewsListResponse newsList, KeywordVO keyword) {
         for (NewsVO news : newsList.getItems()) {
-            news.setKeyword(keyword.getKeyword());
-            news.setCategory(keyword.getCategory());
+            news.setKeywordList(keyword.getKeyword());
+            news.setKeywordCategory(keyword.getCategory());
             int num = newsDAO.insertNews(news);
             if (num == 0) log.error("에러 원인 : {}", news);
         }
     }
 
+    @Override
+    @Transactional
+    public NewsListResponse selectNewsByCategory(String category) {
+        NewsListResponse response = new NewsListResponse();
+        response.setItems(newsDAO.selectNewsByCategory(category));
+
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public NewsListResponse selectNewsBySearchWord(String word) {
+        NewsListResponse response = new NewsListResponse();
+        response.setItems(newsDAO.selectNewsBySearchWord(word));
+
+        return response;
+    }
 }

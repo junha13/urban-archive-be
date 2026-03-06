@@ -1,6 +1,7 @@
 package archive.backend.domain.news.web;
 
 import archive.backend.domain.news.service.NewsService;
+import archive.backend.domain.news.service.dto.keywordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,11 +15,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NewsController {
 
-    private final NewsService service;
+    private final NewsService newsService;
 
-    @RequestMapping("/")
-    public ResponseEntity<?> login() {
+    @RequestMapping("/category")
+    public ResponseEntity<?> selectNewsByCategory(@RequestBody keywordRequest keyword) {
+       return ResponseEntity.ok(Map.of("result",newsService.selectNewsByCategory(keyword.getCategory())));
+    }
 
-       return ResponseEntity.ok(Map.of("result",""));
+    @RequestMapping("/word")
+    public ResponseEntity<?> selectNewsBySearchWord(@RequestBody keywordRequest keyword) {
+        return ResponseEntity.ok(Map.of("result",newsService.selectNewsBySearchWord(keyword.getWord())));
     }
 }

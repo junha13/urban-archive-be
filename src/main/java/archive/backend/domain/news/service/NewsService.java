@@ -9,6 +9,8 @@ public interface NewsService {
 
     void insertNews(NewsListResponse newsList, KeywordVO keyword);
 
+    NewsListResponse selectNewsByCategory(String Category);
 
+    NewsListResponse selectNewsBySearchWord(String word);
 
 }

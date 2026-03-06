@@ -27,7 +27,7 @@ public class NewsCrawlingScheduler {
 
     private final Dotenv dotenv;
 
-    @Scheduled(cron = "5 * * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void crawlingNews() {
         // 1. 검색어를 디비에서 가져오고
         List<KeywordVO> keywordList = new ArrayList<>();
@@ -53,8 +53,6 @@ public class NewsCrawlingScheduler {
 
                 System.out.println(NewsList.getItems().get(0).toString());
                 newService.insertNews(NewsList, keyword);
-
-                // 3. 디비에 뉴스 정보 저장 => mapper에서 uri 보고 기존 뉴스가 있으면 news 컬럼인 keywordList 에 추가하는 걸로
 
             } catch (Exception e) {
                 // throw new CustomException(NewsErrorCode.NEWS_NOT_FOUND);

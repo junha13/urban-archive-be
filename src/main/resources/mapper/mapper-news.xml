@@ -13,7 +13,7 @@
         insert into
             tb_news(title, link, keyword_list, keyword_category, description, pubDate)
         values
-            (#{title}, #{link}, #{keyword}, #{category}, #{description}, #{pubDate, jdbcType=OTHER})
+            (#{title}, #{link}, #{keywordList}, #{keywordCategory}, #{description}, #{pubDate, jdbcType=OTHER})
         on conflict (link)
         do update set
             keyword_list =
@@ -29,5 +29,25 @@
                     ELSE tb_news.keyword_category
                 END
     </insert>
+
+    <select id="selectNewsByCategory" parameterType="String" resultType="archive.backend.domain.news.service.NewsVO">
+        SELECT * FROM tb_news
+        WHERE 1=1
+        <if test="category != '전체'">
+            AND keyword_category ILIKE CONCAT('%', #{category}, '%')
+        </if>
+        ORDER BY pubDate DESC
+    </select>
+
+    <select id="selectNewsBySearchWord" parameterType="String" resultType="archive.backend.domain.news.service.NewsVO">
+        SELECT * FROM tb_news
+        WHERE 1=1
+          AND (
+            title ILIKE CONCAT('%', #{searchWord}, '%')
+                OR description ILIKE CONCAT('%', #{searchWord}, '%')
+                OR keyword_list ILIKE CONCAT('%', #{searchWord}, '%')
+            )
+        ORDER BY pubDate DESC
+    </select>
 
 </mapper>
