@@ -7,9 +7,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -56,6 +61,19 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // spring security 에서 jwt token 받고 유저 객체에 담아 인증
+    public Authentication getAuthentication(String token) {
+        String userId = getUserId(token);
+
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        String role = claims.get("role").toString();
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+
+        User principal = new User(userId, "", Collections.singleton(authority));
+        return new UsernamePasswordAuthenticationToken(principal, token, Collections.singleton(authority));
     }
 
     public String getUserId(String token) {

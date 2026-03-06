@@ -5,12 +5,12 @@
     <select id="findByUserId" parameterType="String" resultType="archive.backend.domain.auth.service.UserVO">
         select
             user_number,
-            id,
-            password,
+            login_id,
+            login_password,
             created_at
         from tb_user
         where 1=1
-        and id = #{userId}
+        and login_id = #{userId}
     </select>
 
 

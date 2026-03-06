@@ -6,6 +6,6 @@ import java.util.Map;
 
 public interface AuthService {
 
-    Map<String, String> login(LoginRequest request);
+    Map<String, Object> login(LoginRequest request);
 
 }

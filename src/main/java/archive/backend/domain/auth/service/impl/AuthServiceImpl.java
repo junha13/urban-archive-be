@@ -3,6 +3,7 @@ package archive.backend.domain.auth.service.impl;
 import archive.backend.domain.auth.service.AuthService;
 import archive.backend.domain.auth.service.UserVO;
 import archive.backend.domain.auth.service.dto.LoginRequest;
+import archive.backend.global.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,24 +17,30 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthDAO authDAO;
     private final BCryptPasswordEncoder passwordEncoder;
-    //private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public Map<String, String> login(LoginRequest request) {
-        Map<String, String> token = new HashMap<String, String>();
-        UserVO user = authDAO.findByUserId(request.getId());
+    public Map<String, Object> login(LoginRequest request) {
+        Map<String, Object> loginResult = new HashMap<String, Object>();
+        UserVO user = authDAO.findByUserId(request.getLoginId());
 
         if (user == null) {
             // custom Exception 뱉기
         }
 
-        if (passwordEncoder.matches(request.getPassword(), user.getLoginPassword())) {
+        if (!passwordEncoder.matches(request.getLoginPassword(), user.getLoginPassword())) {
             // custom Exception 뱉기
         }
 
-        token.put("accessToken", "");
+        String accessToken = jwtTokenProvider.createToken(user.getLoginId(), user.getRole());
+        
+        // 비밀번호 지워서 보내기
+        user.setLoginPassword(null);
 
-        return token;
+        loginResult.put("accessToken", accessToken);
+        loginResult.put("userInfo", user);
+
+        return loginResult;
     }
 
 }

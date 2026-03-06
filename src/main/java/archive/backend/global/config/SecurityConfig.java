@@ -1,5 +1,7 @@
 package archive.backend.global.config;
 
+import archive.backend.global.filter.JwtAuthenticationFilter;
+import archive.backend.global.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration // 컴포넌트 스캔에 적용되도록 어노테이션을 달아줍니다.
 @EnableWebSecurity // 모든 요청 URL이 스프링 시큐리티의 필터체인을 거치도록 하는 어노테이션입니다.
@@ -18,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     // provider 주입
-    // private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,13 +29,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)  // csrf 비활성
                 .httpBasic(HttpBasicConfigurer::disable)    // http basic Auth 기반 인증 비활성
+                .formLogin(AbstractHttpConfigurer::disable) // form 로그인 비활성
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/**").permitAll()   // API 다 열어두기(개발용)
-                        .anyRequest().permitAll()
-                );
+                        .requestMatchers("/api/auth/**").permitAll()   // API 다 열어두기(개발용)
+                        .anyRequest().authenticated() // 인증 필요
+                        //.anyRequest().permitAll() // 다 열어두기
+                )
+
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
