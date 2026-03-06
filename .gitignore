@@ -302,4 +302,10 @@ $RECYCLE.BIN/
 # ENV
 .env
 
+.idea
+.mvn
+.gitattributes
+mvnw.cmd
+mvnw
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,eclipse,java,maven,git,windows,macos
