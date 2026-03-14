@@ -35,8 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()   // API 다 열어두기(개발용)
-                        .anyRequest().authenticated() // 인증 필요
-                        //.anyRequest().permitAll() // 다 열어두기
+                        //.anyRequest().authenticated() // 인증 필요
+                        .anyRequest().permitAll() // 다 열어두기
                 )
 
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

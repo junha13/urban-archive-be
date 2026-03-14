@@ -9,7 +9,6 @@ public class JoinRequest {
 
     @Data
     @AllArgsConstructor
-    @RequiredArgsConstructor
     @NoArgsConstructor
     public static class JoinForm {
         private String loginId;
@@ -25,7 +24,6 @@ public class JoinRequest {
 
     @Data
     @AllArgsConstructor
-    @RequiredArgsConstructor
     @NoArgsConstructor
     public static class IdCheck {
         private String loginId;
@@ -33,7 +31,6 @@ public class JoinRequest {
 
     @Data
     @AllArgsConstructor
-    @RequiredArgsConstructor
     @NoArgsConstructor
     public static class EmailCheck {
         private String email;
