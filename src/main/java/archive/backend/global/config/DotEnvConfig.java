@@ -3,8 +3,8 @@ package archive.backend.global.config;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.core.PriorityOrdered;
+import org.springframework.core.annotation.Order;
 
 @Configuration
 public class DotEnvConfig {
