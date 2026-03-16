@@ -20,4 +20,4 @@ jobs:
             chmod +x ./mvnw
             ./mvnw clean package -DskipTests
             fuser -k 8080/tcp || true
-            nohup java -jar target/*.jar > ~/app/backend/app.log 2>&1 &
+            nohup java -jar $(ls target/*.jar) .env > app.log 2>&1 &
