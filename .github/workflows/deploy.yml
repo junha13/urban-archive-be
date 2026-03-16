@@ -17,7 +17,6 @@ jobs:
           script: |
             cd ~/app/backend
             git pull origin main
-            chmod +x ./mvnw
-            ./mvnw clean package -DskipTests
+            mvn clean package -DskipTests
             fuser -k 8080/tcp || true
             nohup java -jar $(ls target/*.jar) .env > app.log 2>&1 &
