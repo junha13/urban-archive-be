@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="archive.backend.domain.record.service.impl.RecordDAO">
+
+    <!--작품 업로드-->
+    <insert id="insertRecord" parameterType="archive.backend.domain.record.service.RecordVO" useGeneratedKeys="true" keyProperty="recordNumber" keyColumn="record_number">
+        INSERT INTO tb_record (user_number, subject_number, title, description, file_url, grade, semester)
+        VALUES (#{userNumber}, #{subjectNumber}, #{title}, #{description}, #{fileUrl}, #{grade}, #{semester})
+    </insert>
+
+    <select id="selectRecordList" resultType="archive.backend.domain.record.service.RecordVO">
+        SELECT
+            record_number, user_number, subject_number, title,
+            description, file_url, grade, semester, created_at
+        FROM tb_record
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectRecordDetail" parameterType="long" resultType="archive.backend.domain.record.service.RecordVO">
+        SELECT * FROM tb_record WHERE record_number = #{recordNumber}
+    </select>
+
+    <update id="updateRecord" parameterType="archive.backend.domain.record.service.RecordVO">
+        UPDATE tb_record
+        SET title = #{title}, description = #{description}, grade = #{grade}, semester = #{semester}, file_url = #{fileUrl}
+        WHERE record_number = #{recordNumber}
+    </update>
+
+    <delete id="deleteRecord" parameterType="long">
+        DELETE FROM tb_record WHERE record_number = #{recordNumber}
+    </delete>
+
+    <!--추후 페이지네이션 적용-->
+    <select id="selectTagsByRecordNumbers" resultType="archive.backend.domain.record.service.RecordTagVO">
+        SELECT record_number, user_number
+        FROM tb_record_tag
+        WHERE record_number IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertUserTag">
+        INSERT INTO tb_record_tag (record_number, user_number)
+        VALUES (#{recordNumber}, #{userNumber})
+    </insert>
+
+    <select id="selectTaggedUserNumbers" resultType="long">
+        SELECT user_number FROM tb_record_tag WHERE record_number = #{recordNumber}
+    </select>
+
+    <delete id="deleteTagsByRecordNumber">
+        DELETE FROM tb_record_tag WHERE record_number = #{recordNumber}
+    </delete>
+
+</mapper>

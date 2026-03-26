@@ -67,9 +67,11 @@ CREATE TABLE tb_record_tag (
     tag_number      SERIAL          PRIMARY KEY,
     record_number   INTEGER         NOT NULL,
     user_number     INTEGER         NOT NULL,
+    created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_tag_record FOREIGN KEY (record_number)
     REFERENCES tb_record(record_number) ON DELETE CASCADE,
     CONSTRAINT fk_tag_user FOREIGN KEY (user_number)
-    REFERENCES tb_user(user_number) ON DELETE CASCADE
+    REFERENCES tb_user(user_number) ON DELETE CASCADE,
+    CONSTRAINT uq_record_user_tag UNIQUE (record_number, user_number)
 );
