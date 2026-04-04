@@ -27,7 +27,7 @@ public class NewsCrawlingScheduler {
 
     private final Dotenv dotenv;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 4 * * *")
     public void crawlingNews() {
         // 1. 검색어를 디비에서 가져오고
         List<KeywordVO> keywordList = new ArrayList<>();

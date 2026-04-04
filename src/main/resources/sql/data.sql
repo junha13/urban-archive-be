@@ -1,8 +1,8 @@
-INSERT INTO tb_user (login_id, login_password, student_id, name, email, role, status, nick_name, lab)
+INSERT INTO tb_user (login_id, login_password, student_id, name, email, phone, role, status)
 VALUES
-    ('admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '00000000', '관리자', 'admin@naver.com', 'ROLE_ADMIN', 'ACTIVE', '마스터', '운영국'),
-    ('user01', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '20211234', '김철수', 'chulsoo@naver.com', 'ROLE_USER', 'ACTIVE', '안양깎이', '도시설계랩'),
-    ('user02', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '20215678', '이영희', 'younghee@gmail.com', 'ROLE_USER', 'ACTIVE', '기록왕', 'GIS연구소');
+    ('admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '00000000', '관리자', 'admin@naver.com','010-2103-3406', 'ROLE_ADMIN', 'ACTIVE'),
+    ('user01', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '20211234', '김철수', 'chulsoo@naver.com','010-2103-3406', 'ROLE_USER', 'ACTIVE'),
+    ('user02', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3Y1tlRy.9uBvH996', '20215678', '이영희', 'younghee@gmail.com', '010-2103-3406','ROLE_USER', 'ACTIVE');
 
 INSERT INTO tb_subject (subject_name)
 VALUES

@@ -15,8 +15,8 @@
     </select>
 
     <insert id="insertUser" parameterType="archive.backend.domain.auth.service.UserVO">
-        insert into tb_user(login_id, login_password, student_id, name, nick_name, profile_image, email, lab, description, role, stuats, create_at)
-        values (#{loginId}, #{loginPassword}, #{studentId}, #{name}, #{nickName}, #{profileImage}, #{email}, #{lab}, #{description}, 'ROLE_USER', 'ACTIVE', NOW())
+        insert into tb_user(login_id, login_password, student_id, name, email, phone, role, status, created_at)
+        values (#{loginId}, #{loginPassword}, #{studentId}, #{name}, #{email}, #{phone}, 'ROLE_USER', 'ACTIVE', NOW())
     </insert>
 
     <select id="existByLoginId" parameterType="String" resultType="boolean">

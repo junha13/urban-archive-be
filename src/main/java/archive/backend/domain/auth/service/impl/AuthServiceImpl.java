@@ -56,11 +56,8 @@ public class AuthServiceImpl implements AuthService {
         user.setLoginPassword(request.getLoginPassword());
         user.setStudentId(request.getStudentId());
         user.setName(request.getName());
-        user.setNickName(request.getNickName());
         user.setEmail(request.getEmail());
-        user.setProfileImage(request.getProfileImage());
-        user.setLab(request.getLab());
-        user.setDescription(request.getDescription());
+        user.setPhone(request.getPhone());
 
         authDAO.insertUser(user);
         return true;

@@ -16,6 +16,7 @@ CREATE TABLE tb_user (
     lab             VARCHAR(100)    ,
     description     TEXT            ,
     email           VARCHAR(100)    NOT NULL UNIQUE,
+    phone           VARCHAR(20)     NOT NULL,
     role            VARCHAR(20)     NOT NULL,
     status          VARCHAR(10)     NOT NULL,
     created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,

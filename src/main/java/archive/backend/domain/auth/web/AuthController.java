@@ -23,12 +23,12 @@ public class AuthController {
 
     @RequestMapping("/join")
     public ResponseEntity<?> join(@RequestBody JoinRequest.JoinForm request) {
-        return ResponseEntity.ok(Map.of("result",""));
+        return ResponseEntity.ok(Map.of("result",service.join(request)));
     }
 
     @RequestMapping("/idCheck")
     public ResponseEntity<?> idCheck(@RequestBody JoinRequest.IdCheck request) {
-        return ResponseEntity.ok(Map.of("result",""));
+        return ResponseEntity.ok(Map.of("result",service.idCheck(request)));
     }
 
     @RequestMapping("/emailCheck")

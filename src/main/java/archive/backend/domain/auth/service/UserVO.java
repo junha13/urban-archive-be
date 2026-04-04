@@ -21,6 +21,7 @@ public class UserVO {
     private String lab; // 연구실
     private String description; // 자기소개
     private String email;
+    private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String status;
