@@ -7,7 +7,8 @@
             user_number,
             login_id,
             login_password,
-            created_at
+            created_at,
+            role
         from tb_user
         where 1=1
         and login_id = #{userId}
