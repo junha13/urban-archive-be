@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserVO user = new UserVO();
         user.setLoginId(request.getLoginId());
-        user.setLoginPassword(request.getLoginPassword());
+        user.setLoginPassword(encodePassword);
         user.setStudentId(request.getStudentId());
         user.setName(request.getName());
         user.setEmail(request.getEmail());
