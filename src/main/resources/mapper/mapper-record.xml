@@ -8,21 +8,89 @@
         VALUES (#{userNumber}, #{type}, #{subjectNumber}, #{title}, #{description}, #{fileUrl}, #{grade}, #{semester})
     </insert>
 
-    <select id="selectRecordList" parameterType="string" resultType="archive.backend.domain.record.service.RecordVO">
+    <select id="searchRecordReferences" parameterType="archive.backend.domain.record.service.dto.RecordReferenceSearchCondition" resultType="archive.backend.domain.record.service.dto.RecordSearchOptionResponse">
+        <choose>
+            <when test="searchType == 'name'">
+                SELECT
+                    user_number AS number,
+                    name AS label,
+                    login_id AS sub_label,
+                    'name' AS search_type
+                FROM tb_user
+                WHERE name ILIKE CONCAT('%', #{keyword}, '%')
+                   OR COALESCE(nick_name, '') ILIKE CONCAT('%', #{keyword}, '%')
+                   OR login_id ILIKE CONCAT('%', #{keyword}, '%')
+                ORDER BY name ASC, user_number ASC
+                LIMIT 20
+            </when>
+            <when test="searchType == 'subject'">
+                SELECT
+                    subject_number AS number,
+                    subject_name AS label,
+                    CAST(NULL AS VARCHAR) AS sub_label,
+                    'subject' AS search_type
+                FROM tb_subject
+                WHERE subject_name ILIKE CONCAT('%', #{keyword}, '%')
+                ORDER BY subject_name ASC, subject_number ASC
+                LIMIT 20
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectRecordList" parameterType="archive.backend.domain.record.service.dto.RecordListSearchCondition" resultType="archive.backend.domain.record.service.RecordVO">
         SELECT
-            record_number, user_number, type, subject_number, title,
-            description, file_url, grade, semester, created_at, updated_at
-        FROM tb_record
-        <if test="_parameter != null and _parameter != ''">
-            WHERE type = #{_parameter}
-        </if>
-        ORDER BY created_at DESC
+            r.record_number,
+            r.user_number,
+            r.type,
+            r.subject_number,
+            r.title,
+            r.description,
+            r.file_url,
+            r.grade,
+            r.semester,
+            r.created_at,
+            r.updated_at
+        FROM tb_record r
+        LEFT JOIN tb_user u ON u.user_number = r.user_number
+        LEFT JOIN tb_subject s ON s.subject_number = r.subject_number
+        <where>
+            <if test="type != null and type != ''">
+                r.type = #{type}
+            </if>
+            <if test="searchType != null and searchType != '' and keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'title'">
+                        AND r.title ILIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND (
+                            u.name ILIKE CONCAT('%', #{keyword}, '%')
+                            OR COALESCE(u.nick_name, '') ILIKE CONCAT('%', #{keyword}, '%')
+                            OR u.login_id ILIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </when>
+                    <when test="searchType == 'subject'">
+                        AND s.subject_name ILIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        ORDER BY r.created_at DESC
     </select>
 
     <select id="selectRecordDetail" parameterType="long" resultType="archive.backend.domain.record.service.RecordVO">
         SELECT
-            record_number, user_number, type, subject_number, title,
-            description, file_url, grade, semester, created_at, updated_at
+            record_number,
+            user_number,
+            type,
+            subject_number,
+            title,
+            description,
+            file_url,
+            grade,
+            semester,
+            created_at,
+            updated_at
         FROM tb_record
         WHERE record_number = #{recordNumber}
     </select>
@@ -30,6 +98,7 @@
     <update id="updateRecord" parameterType="archive.backend.domain.record.service.RecordVO">
         UPDATE tb_record
         SET type = #{type},
+            subject_number = #{subjectNumber},
             title = #{title},
             description = #{description},
             grade = #{grade},

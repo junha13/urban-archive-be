@@ -18,5 +18,5 @@ public class RecordRequest {
     private String description;
     private Integer grade;
     private String semester;
-    private List<Long> taggedUserNumbers; // ?좎? ?쒓렇 紐⑸줉
+    private List<Long> taggedUserNumbers; // 유저 태그 목록
 }

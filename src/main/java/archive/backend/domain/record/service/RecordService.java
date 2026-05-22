@@ -2,6 +2,7 @@ package archive.backend.domain.record.service;
 
 import archive.backend.domain.record.service.dto.RecordDetailResponse;
 import archive.backend.domain.record.service.dto.RecordRequest;
+import archive.backend.domain.record.service.dto.RecordSearchOptionResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,7 +11,9 @@ public interface RecordService {
 
     boolean insertRecord(String loginId, RecordRequest record, MultipartFile file);
 
-    List<RecordDetailResponse> selectRecordList(String type);
+    List<RecordSearchOptionResponse> searchRecordReferences(String searchType, String keyword);
+
+    List<RecordDetailResponse> selectRecordList(String type, String searchType, String keyword);
 
     RecordDetailResponse selectRecordDetail(Long recordNumber);
 

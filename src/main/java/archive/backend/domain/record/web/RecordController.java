@@ -30,9 +30,19 @@ public class RecordController {
         return ResponseEntity.ok(Map.of("result", recordService.insertRecord(authentication.getName(), record, file)));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchRecordReferences(
+            @RequestParam("searchType") String searchType,
+            @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(Map.of("result", recordService.searchRecordReferences(searchType, keyword)));
+    }
+
     @GetMapping("/list")
-    public ResponseEntity<?> selectRecordList(@RequestParam(value = "type", required = false) String type) {
-        return ResponseEntity.ok(Map.of("result", recordService.selectRecordList(type)));
+    public ResponseEntity<?> selectRecordList(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "searchType", required = false) String searchType,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        return ResponseEntity.ok(Map.of("result", recordService.selectRecordList(type, searchType, keyword)));
     }
 
     @GetMapping("/{recordNumber}")

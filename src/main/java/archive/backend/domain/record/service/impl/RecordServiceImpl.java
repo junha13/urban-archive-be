@@ -1,11 +1,13 @@
 package archive.backend.domain.record.service.impl;
 
-
 import archive.backend.domain.record.service.RecordService;
 import archive.backend.domain.record.service.RecordTagVO;
 import archive.backend.domain.record.service.RecordVO;
 import archive.backend.domain.record.service.dto.RecordDetailResponse;
+import archive.backend.domain.record.service.dto.RecordListSearchCondition;
+import archive.backend.domain.record.service.dto.RecordReferenceSearchCondition;
 import archive.backend.domain.record.service.dto.RecordRequest;
+import archive.backend.domain.record.service.dto.RecordSearchOptionResponse;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 public class RecordServiceImpl implements RecordService {
 
     private static final Set<String> ALLOWED_RECORD_TYPES = Set.of("urban", "major", "extra");
+    private static final Set<String> ALLOWED_REFERENCE_SEARCH_TYPES = Set.of("name", "subject");
+    private static final Set<String> ALLOWED_LIST_SEARCH_TYPES = Set.of("title", "name", "subject");
 
     private final RecordDAO dao;
 
@@ -72,18 +76,46 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    @Transactional
-    public List<RecordDetailResponse> selectRecordList(String type) {
+    @Transactional(readOnly = true)
+    public List<RecordSearchOptionResponse> searchRecordReferences(String searchType, String keyword) {
+        String normalizedSearchType = normalizeSearchType(searchType, ALLOWED_REFERENCE_SEARCH_TYPES);
+        String normalizedKeyword = normalizeKeyword(keyword);
+
+        if (normalizedSearchType == null || normalizedKeyword == null) {
+            return new ArrayList<>();
+        }
+
+        return dao.searchRecordReferences(new RecordReferenceSearchCondition(normalizedSearchType, normalizedKeyword));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecordDetailResponse> selectRecordList(String type, String searchType, String keyword) {
         String normalizedType = normalizeOptionalRecordType(type);
         if (type != null && normalizedType == null) {
             return new ArrayList<>();
         }
 
-        List<RecordVO> records = dao.selectRecordList(normalizedType).stream()
+        String normalizedKeyword = normalizeKeyword(keyword);
+        String normalizedSearchType = normalizeSearchType(searchType, ALLOWED_LIST_SEARCH_TYPES);
+
+        if (normalizedKeyword != null && normalizedSearchType == null) {
+            return new ArrayList<>();
+        }
+
+        RecordListSearchCondition condition = new RecordListSearchCondition(
+                normalizedType,
+                normalizedSearchType,
+                normalizedKeyword
+        );
+
+        List<RecordVO> records = dao.selectRecordList(condition).stream()
                 .peek(record -> record.setType(normalizeRecordType(record.getType())))
                 .filter(record -> record.getType() != null)
                 .toList();
-        if (records.isEmpty()) return new ArrayList<>();
+        if (records.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         List<Long> ids = records.stream().map(RecordVO::getRecordNumber).toList();
 
@@ -92,18 +124,16 @@ public class RecordServiceImpl implements RecordService {
                 .collect(Collectors.groupingBy(RecordTagVO::getRecordNumber,
                         Collectors.mapping(RecordTagVO::getUserNumber, Collectors.toList())));
 
-        List<RecordDetailResponse> response = records.stream()
+        return records.stream()
                 .map(record -> new RecordDetailResponse(
                         record,
                         tagMap.getOrDefault(record.getRecordNumber(), new ArrayList<>())
                 ))
                 .toList();
-
-        return response;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public RecordDetailResponse selectRecordDetail(Long recordNumber) {
         RecordVO record = dao.selectRecordDetail(recordNumber);
         if (record == null) {
@@ -138,7 +168,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
-            throw new AccessDeniedException("蹂몄씤 湲곕줉留??섏젙?????덉뒿?덈떎.");
+            throw new AccessDeniedException("본인 기록만 수정할 수 있습니다.");
         }
 
         if (file != null && !file.isEmpty()) {
@@ -149,6 +179,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         record.setType(normalizedType);
+        record.setSubjectNumber(request.getSubjectNumber());
         record.setTitle(request.getTitle());
         record.setDescription(request.getDescription());
         record.setGrade(request.getGrade());
@@ -175,7 +206,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
-            throw new AccessDeniedException("蹂몄씤 湲곕줉留???젣?????덉뒿?덈떎.");
+            throw new AccessDeniedException("본인 기록만 삭제할 수 있습니다.");
         }
 
         if (record.getFileUrl() != null) {
@@ -197,12 +228,12 @@ public class RecordServiceImpl implements RecordService {
         try (InputStream inputStream = file.getInputStream()) {
             amazonS3.putObject(bucket, fileName, inputStream, metadata);
             return amazonS3.getUrl(bucket, fileName).toString();
-
         } catch (Exception e) {
             return "false";
         }
     }
 
+    @Override
     public void deleteFileFromS3(String fileUrl) {
         try {
             String bucket = dotenv.get("S3_BUCKET_NAME");
@@ -236,4 +267,27 @@ public class RecordServiceImpl implements RecordService {
         return normalizedType;
     }
 
+    private String normalizeSearchType(String searchType, Set<String> allowedTypes) {
+        if (searchType == null || searchType.isBlank()) {
+            return null;
+        }
+
+        String normalizedSearchType = searchType.trim().toLowerCase(Locale.ROOT);
+        if (!allowedTypes.contains(normalizedSearchType)) {
+            return null;
+        }
+        return normalizedSearchType;
+    }
+
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null) {
+            return null;
+        }
+
+        String normalizedKeyword = keyword.trim();
+        if (normalizedKeyword.isEmpty()) {
+            return null;
+        }
+        return normalizedKeyword;
+    }
 }
