@@ -19,12 +19,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration // 컴포넌트 스캔에 적용되도록 어노테이션을 달아줍니다.
-@EnableWebSecurity // 모든 요청 URL이 스프링 시큐리티의 필터체인을 거치도록 하는 어노테이션입니다.
+@Configuration // 而댄룷?뚰듃 ?ㅼ틪???곸슜?섎룄濡??대끂?뚯씠?섏쓣 ?ъ븘以띾땲??
+@EnableWebSecurity // 紐⑤뱺 ?붿껌 URL???ㅽ봽留??쒗걧由ы떚???꾪꽣泥댁씤??嫄곗튂?꾨줉 ?섎뒗 ?대끂?뚯씠?섏엯?덈떎.
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // provider 주입
+    // provider 二쇱엯
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
@@ -32,19 +32,28 @@ public class SecurityConfig {
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)  // csrf 비활성
-                .httpBasic(HttpBasicConfigurer::disable)    // http basic Auth 기반 인증 비활성
-                .formLogin(AbstractHttpConfigurer::disable) // form 로그인 비활성
+                .csrf(AbstractHttpConfigurer::disable)  // csrf 鍮꾪솢??
+                .httpBasic(HttpBasicConfigurer::disable)    // http basic Auth 湲곕컲 ?몄쬆 鍮꾪솢??
+                .formLogin(AbstractHttpConfigurer::disable) // form 濡쒓렇??鍮꾪솢??
                 .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ?몄뀡 誘몄궗??
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()   // 인증 관련 API 공개
-                        .requestMatchers("/api/news/**").permitAll()   // 뉴스 조회 API 공개
-                        .requestMatchers(HttpMethod.GET, "/api/record/**").permitAll() // 기록 조회 API 공개
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/api/swagger-ui.html",
+                                "/api/swagger-ui/**",
+                                "/api/v3/api-docs/**",
+                                "/api/v3/api-docs.yaml"
+                        ).permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()   // ?몄쬆 愿??API 怨듦컻
+                        .requestMatchers("/api/news/**").permitAll()   // ?댁뒪 議고쉶 API 怨듦컻
+                        .requestMatchers(HttpMethod.GET, "/api/record/**").permitAll() // 湲곕줉 議고쉶 API 怨듦컻
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/record/**").authenticated() // 기록 등록/수정/삭제는 인증 필요
+                        .requestMatchers("/api/record/**").authenticated() // 湲곕줉 ?깅줉/?섏젙/??젣???몄쬆 ?꾩슂
                         .anyRequest().authenticated()
                 )
 
@@ -58,7 +67,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // pattern을 "*"로 설정하면 모든 도메인을 허용하며, allowCredentials(true)와도 함께 쓸 수 있습니다.
+        // pattern??"*"濡??ㅼ젙?섎㈃ 紐⑤뱺 ?꾨찓?몄쓣 ?덉슜?섎ŉ, allowCredentials(true)????④퍡 ?????덉뒿?덈떎.
         configuration.addAllowedOriginPattern("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
@@ -70,17 +79,17 @@ public class SecurityConfig {
     }
 
 
-    // 비밀번호 해시화 빈 등록
+    // 鍮꾨?踰덊샇 ?댁떆??鍮??깅줉
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    //필터체인을 거치지 않을 URL
+    //?꾪꽣泥댁씤??嫄곗튂吏 ?딆쓣 URL
     private static final String[] IGNORE_FILTER_URLS = {
     };
 
-    //필터체인을 무시하도록 설정
+    //?꾪꽣泥댁씤??臾댁떆?섎룄濡??ㅼ젙
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
