@@ -5,7 +5,11 @@ import archive.backend.domain.record.service.dto.RecordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,22 +24,22 @@ public class RecordController {
 
     private final RecordService recordService;
 
-    @RequestMapping("/insert")
+    @PostMapping("/insert")
     public ResponseEntity<?> insertRecord(Authentication authentication, @RequestPart("record") RecordRequest record, @RequestPart(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(Map.of("result", recordService.insertRecord(authentication.getName(), record, file)));
     }
 
-    @RequestMapping(value = "/list")
+    @GetMapping("/list")
     public ResponseEntity<?> selectRecordList() { // 추후 페이지 받기
         return ResponseEntity.ok(Map.of("result", recordService.selectRecordList()));
     }
 
-    @RequestMapping("/{recordNumber}")
+    @GetMapping("/{recordNumber}")
     public ResponseEntity<?> selectRecordDetail(@PathVariable("recordNumber") Long recordNumber) {
         return ResponseEntity.ok(Map.of("result", recordService.selectRecordDetail(recordNumber)));
     }
 
-    @RequestMapping("/update/{recordNumber}")
+    @PutMapping("/update/{recordNumber}")
     public ResponseEntity<?> updateRecord(
             Authentication authentication,
             @PathVariable("recordNumber") Long recordNumber,
@@ -44,7 +48,7 @@ public class RecordController {
         return ResponseEntity.ok(Map.of("result", recordService.updateRecord(recordNumber, authentication.getName(), hasAdminRole(authentication), record, file)));
     }
 
-    @RequestMapping("/delete/{recordNumber}")
+    @DeleteMapping("/delete/{recordNumber}")
     public ResponseEntity<?> deleteRecord(Authentication authentication, @PathVariable("recordNumber") Long recordNumber) {
         return ResponseEntity.ok(Map.of("result", recordService.deleteRecord(recordNumber, authentication.getName(), hasAdminRole(authentication))));
     }

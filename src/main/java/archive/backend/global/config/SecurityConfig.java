@@ -39,6 +39,7 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()   // 인증 관련 API 공개
                         .requestMatchers("/api/news/**").permitAll()   // 뉴스 조회 API 공개
                         .requestMatchers(HttpMethod.GET, "/api/record/**").permitAll() // 기록 조회 API 공개

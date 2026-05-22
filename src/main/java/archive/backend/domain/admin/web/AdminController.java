@@ -6,6 +6,7 @@ import archive.backend.domain.auth.service.dto.JoinRequest;
 import archive.backend.domain.auth.service.dto.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +20,9 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @RequestMapping("/roleCheck")
+    @GetMapping("/roleCheck")
     public String roleCheck() {
-        return "너 어드민 맞아";
+        return "???대뱶誘?留욎븘";
     }
 
 }
