@@ -31,6 +31,12 @@
         DELETE FROM tb_record WHERE record_number = #{recordNumber}
     </delete>
 
+    <select id="findUserNumberByLoginId" parameterType="string" resultType="long">
+        SELECT user_number
+        FROM tb_user
+        WHERE login_id = #{loginId}
+    </select>
+
     <!--추후 페이지네이션 적용-->
     <select id="selectTagsByRecordNumbers" resultType="archive.backend.domain.record.service.RecordTagVO">
         SELECT record_number, user_number

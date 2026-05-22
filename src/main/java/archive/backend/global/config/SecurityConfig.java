@@ -5,6 +5,7 @@ import archive.backend.global.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -38,10 +39,12 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()   // API 다 열어두기(개발용)
+                        .requestMatchers("/api/auth/**").permitAll()   // 인증 관련 API 공개
+                        .requestMatchers("/api/news/**").permitAll()   // 뉴스 조회 API 공개
+                        .requestMatchers(HttpMethod.GET, "/api/record/**").permitAll() // 기록 조회 API 공개
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        //.anyRequest().authenticated() // 인증 필요
-                        .anyRequest().permitAll() // 다 열어두기
+                        .requestMatchers("/api/record/**").authenticated() // 기록 등록/수정/삭제는 인증 필요
+                        .anyRequest().authenticated()
                 )
 
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
@@ -74,9 +77,6 @@ public class SecurityConfig {
 
     //필터체인을 거치지 않을 URL
     private static final String[] IGNORE_FILTER_URLS = {
-            "/" // 루트 경로
-            //,   "/api/user/sign"   // 회원 가입
-
     };
 
     //필터체인을 무시하도록 설정

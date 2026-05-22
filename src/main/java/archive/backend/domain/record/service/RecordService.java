@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface RecordService {
 
-    boolean insertRecord(RecordRequest record, MultipartFile file);
+    boolean insertRecord(String loginId, RecordRequest record, MultipartFile file);
 
     List<RecordDetailResponse> selectRecordList();
 
     RecordDetailResponse selectRecordDetail(Long recordNumber);
 
-    boolean updateRecord(Long recordNumber, RecordRequest record, MultipartFile file);
+    boolean updateRecord(Long recordNumber, String loginId, boolean admin, RecordRequest record, MultipartFile file);
 
-    boolean deleteRecord(Long recordNumber);
+    boolean deleteRecord(Long recordNumber, String loginId, boolean admin);
 
     String uploadFile(MultipartFile file);
 

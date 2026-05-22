@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +33,10 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public boolean insertRecord(RecordRequest request, MultipartFile file) {
+    public boolean insertRecord(String loginId, RecordRequest request, MultipartFile file) {
         try {
             RecordVO record = new RecordVO();
-            record.setUserNumber(request.getUserNumber());
+            record.setUserNumber(findUserNumberByLoginId(loginId));
             record.setSubjectNumber(request.getSubjectNumber());
             record.setTitle(request.getTitle());
             record.setDescription(request.getDescription());
@@ -103,8 +104,15 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public boolean updateRecord(Long recordNumber, RecordRequest request, MultipartFile file) {
+    public boolean updateRecord(Long recordNumber, String loginId, boolean admin, RecordRequest request, MultipartFile file) {
         RecordVO record = dao.selectRecordDetail(recordNumber);
+        if (record == null) {
+            return false;
+        }
+
+        if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
+            throw new AccessDeniedException("본인 기록만 수정할 수 있습니다.");
+        }
 
         if (file != null && !file.isEmpty()) {
             if (record.getFileUrl() != null) {
@@ -132,9 +140,17 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public boolean deleteRecord(Long recordNumber) {
+    public boolean deleteRecord(Long recordNumber, String loginId, boolean admin) {
         RecordVO record = dao.selectRecordDetail(recordNumber);
-        if (record != null && record.getFileUrl() != null) {
+        if (record == null) {
+            return false;
+        }
+
+        if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
+            throw new AccessDeniedException("본인 기록만 삭제할 수 있습니다.");
+        }
+
+        if (record.getFileUrl() != null) {
             deleteFileFromS3(record.getFileUrl());
         }
         dao.deleteRecord(recordNumber);
@@ -170,6 +186,10 @@ public class RecordServiceImpl implements RecordService {
             // 파일 삭제 실패는 로그만 찍고 넘어가도 무방함 (핵심 로직은 아니니까)
             e.printStackTrace();
         }
+    }
+
+    private Long findUserNumberByLoginId(String loginId) {
+        return dao.findUserNumberByLoginId(loginId);
     }
 
 }

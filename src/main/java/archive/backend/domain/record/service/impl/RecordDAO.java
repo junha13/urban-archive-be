@@ -25,4 +25,6 @@ public interface RecordDAO {
     void updateRecord(RecordVO recordVO);
 
     void deleteRecord(Long recordNumber);
+
+    Long findUserNumberByLoginId(String loginId);
 }
