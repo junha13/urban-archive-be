@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS tbl_agora_like;
+DROP TABLE IF EXISTS tbl_agora;
 DROP TABLE IF EXISTS tb_record_tag;
 DROP TABLE IF EXISTS tb_record;
 DROP TABLE IF EXISTS tb_subject;
@@ -75,4 +77,53 @@ CREATE TABLE tb_record_tag (
     CONSTRAINT fk_tag_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT uq_record_user_tag UNIQUE (record_number, user_number)
+);
+
+CREATE TABLE tbl_agora (
+    agora_number         SERIAL          PRIMARY KEY,
+    parent_agora_number  INTEGER         ,
+    root_agora_number    INTEGER         ,
+    user_number          INTEGER         NOT NULL,
+    title                VARCHAR(255)    ,
+    content              TEXT            NOT NULL,
+    node_type            VARCHAR(20)     NOT NULL,
+    depth                INTEGER         NOT NULL DEFAULT 0,
+    like_count           INTEGER         NOT NULL DEFAULT 0,
+    status               VARCHAR(10)     NOT NULL DEFAULT 'ACTIVE',
+    created_at           TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_agora_parent FOREIGN KEY (parent_agora_number)
+    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    CONSTRAINT fk_agora_root FOREIGN KEY (root_agora_number)
+    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    CONSTRAINT fk_agora_user FOREIGN KEY (user_number)
+    REFERENCES tb_user(user_number) ON DELETE CASCADE,
+    CONSTRAINT ck_agora_node_type CHECK (node_type IN ('POST', 'COMMENT')),
+    CONSTRAINT ck_agora_depth CHECK (depth IN (0, 1)),
+    CONSTRAINT ck_agora_post_shape CHECK (
+        (node_type = 'POST' AND title IS NOT NULL AND parent_agora_number IS NULL AND root_agora_number IS NULL AND depth = 0)
+        OR
+        (node_type = 'COMMENT' AND title IS NULL AND root_agora_number IS NOT NULL)
+    ),
+    CONSTRAINT ck_agora_comment_shape CHECK (
+        node_type = 'POST'
+        OR
+        (depth = 0 AND parent_agora_number IS NULL)
+        OR
+        (depth = 1 AND parent_agora_number IS NOT NULL)
+    )
+);
+
+CREATE TABLE tbl_agora_like (
+    agora_like_number    SERIAL          PRIMARY KEY,
+    agora_number         INTEGER         NOT NULL,
+    user_number          INTEGER         NOT NULL,
+    created_at           TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_agora_like_agora FOREIGN KEY (agora_number)
+    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    CONSTRAINT fk_agora_like_user FOREIGN KEY (user_number)
+    REFERENCES tb_user(user_number) ON DELETE CASCADE,
+    CONSTRAINT uq_agora_like UNIQUE (agora_number, user_number)
 );

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="archive.backend.domain.agora.service.impl.AgoraDAO">
+
+    <insert id="insertAgora" parameterType="archive.backend.domain.agora.service.AgoraVO" useGeneratedKeys="true" keyProperty="agoraNumber" keyColumn="agora_number">
+        INSERT INTO tbl_agora (
+            parent_agora_number,
+            root_agora_number,
+            user_number,
+            title,
+            content,
+            node_type,
+            depth,
+            status
+        )
+        VALUES (
+            #{parentAgoraNumber},
+            #{rootAgoraNumber},
+            #{userNumber},
+            #{title},
+            #{content},
+            #{nodeType},
+            #{depth},
+            #{status}
+        )
+    </insert>
+
+    <update id="updateAgora" parameterType="archive.backend.domain.agora.service.AgoraVO">
+        UPDATE tbl_agora
+        SET
+            title = #{title},
+            content = #{content},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE agora_number = #{agoraNumber}
+    </update>
+
+    <delete id="deleteAgora" parameterType="long">
+        DELETE FROM tbl_agora
+        WHERE agora_number = #{agoraNumber}
+    </delete>
+
+    <select id="selectPostList" resultType="archive.backend.domain.agora.service.AgoraVO">
+        SELECT
+            a.agora_number,
+            a.parent_agora_number,
+            a.root_agora_number,
+            a.user_number,
+            a.title,
+            a.content,
+            a.node_type,
+            a.depth,
+            a.like_count,
+            a.status,
+            a.created_at,
+            a.updated_at,
+            u.login_id,
+            u.name,
+            u.role,
+            (
+                SELECT COUNT(*)
+                FROM tbl_agora c
+                WHERE c.root_agora_number = a.agora_number
+                  AND c.node_type = 'COMMENT'
+                  AND c.status = 'ACTIVE'
+            ) AS comment_count
+        FROM tbl_agora a
+        INNER JOIN tb_user u ON u.user_number = a.user_number
+        WHERE a.node_type = 'POST'
+          AND a.status = 'ACTIVE'
+        ORDER BY a.created_at DESC
+    </select>
+
+    <select id="selectAgoraByNumber" parameterType="long" resultType="archive.backend.domain.agora.service.AgoraVO">
+        SELECT
+            a.agora_number,
+            a.parent_agora_number,
+            a.root_agora_number,
+            a.user_number,
+            a.title,
+            a.content,
+            a.node_type,
+            a.depth,
+            a.like_count,
+            a.status,
+            a.created_at,
+            a.updated_at,
+            u.login_id,
+            u.name,
+            u.role,
+            CASE
+                WHEN a.node_type = 'POST' THEN (
+                    SELECT COUNT(*)
+                    FROM tbl_agora c
+                    WHERE c.root_agora_number = a.agora_number
+                      AND c.node_type = 'COMMENT'
+                      AND c.status = 'ACTIVE'
+                )
+                ELSE 0
+            END AS comment_count
+        FROM tbl_agora a
+        INNER JOIN tb_user u ON u.user_number = a.user_number
+        WHERE a.agora_number = #{agoraNumber}
+    </select>
+
+    <select id="selectCommentsByRootAgoraNumber" parameterType="long" resultType="archive.backend.domain.agora.service.AgoraVO">
+        SELECT
+            a.agora_number,
+            a.parent_agora_number,
+            a.root_agora_number,
+            a.user_number,
+            a.title,
+            a.content,
+            a.node_type,
+            a.depth,
+            a.like_count,
+            a.status,
+            a.created_at,
+            a.updated_at,
+            u.login_id,
+            u.name,
+            u.role
+        FROM tbl_agora a
+        INNER JOIN tb_user u ON u.user_number = a.user_number
+        WHERE a.root_agora_number = #{rootAgoraNumber}
+          AND a.node_type = 'COMMENT'
+          AND a.status = 'ACTIVE'
+        ORDER BY a.created_at ASC
+    </select>
+
+    <select id="findUserNumberByLoginId" parameterType="string" resultType="long">
+        SELECT user_number
+        FROM tb_user
+        WHERE login_id = #{loginId}
+    </select>
+
+    <select id="countAgoraLike" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_agora_like
+        WHERE agora_number = #{agoraNumber}
+          AND user_number = #{userNumber}
+    </select>
+
+    <insert id="insertAgoraLike">
+        INSERT INTO tbl_agora_like (agora_number, user_number)
+        VALUES (#{agoraNumber}, #{userNumber})
+    </insert>
+
+    <update id="increaseLikeCount" parameterType="long">
+        UPDATE tbl_agora
+        SET like_count = like_count + 1
+        WHERE agora_number = #{agoraNumber}
+    </update>
+
+</mapper>
