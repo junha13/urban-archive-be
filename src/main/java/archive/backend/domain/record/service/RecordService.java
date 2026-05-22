@@ -10,7 +10,7 @@ public interface RecordService {
 
     boolean insertRecord(String loginId, RecordRequest record, MultipartFile file);
 
-    List<RecordDetailResponse> selectRecordList();
+    List<RecordDetailResponse> selectRecordList(String type);
 
     RecordDetailResponse selectRecordDetail(Long recordNumber);
 

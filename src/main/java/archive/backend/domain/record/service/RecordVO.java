@@ -12,6 +12,7 @@ public class RecordVO {
 
     private Long recordNumber;
     private Long userNumber;
+    private String type;
     private Long subjectNumber;
     private String title;
     private String description;

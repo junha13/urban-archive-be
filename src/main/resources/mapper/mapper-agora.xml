@@ -4,7 +4,7 @@
 <mapper namespace="archive.backend.domain.agora.service.AgoraDAO">
 
     <insert id="insertAgora" parameterType="archive.backend.domain.agora.service.AgoraVO" useGeneratedKeys="true" keyProperty="agoraNumber" keyColumn="agora_number">
-        INSERT INTO tbl_agora (
+        INSERT INTO tb_agora (
             parent_agora_number,
             root_agora_number,
             user_number,
@@ -27,7 +27,7 @@
     </insert>
 
     <update id="updateAgora" parameterType="archive.backend.domain.agora.service.AgoraVO">
-        UPDATE tbl_agora
+        UPDATE tb_agora
         SET
             title = #{title},
             content = #{content},
@@ -36,7 +36,7 @@
     </update>
 
     <delete id="deleteAgora" parameterType="long">
-        DELETE FROM tbl_agora
+        DELETE FROM tb_agora
         WHERE agora_number = #{agoraNumber}
     </delete>
 
@@ -59,12 +59,12 @@
             u.role,
             (
                 SELECT COUNT(*)
-                FROM tbl_agora c
+                FROM tb_agora c
                 WHERE c.root_agora_number = a.agora_number
                   AND c.node_type = 'COMMENT'
                   AND c.status = 'ACTIVE'
             ) AS comment_count
-        FROM tbl_agora a
+        FROM tb_agora a
         INNER JOIN tb_user u ON u.user_number = a.user_number
         WHERE a.node_type = 'POST'
           AND a.status = 'ACTIVE'
@@ -91,14 +91,14 @@
             CASE
                 WHEN a.node_type = 'POST' THEN (
                     SELECT COUNT(*)
-                    FROM tbl_agora c
+                    FROM tb_agora c
                     WHERE c.root_agora_number = a.agora_number
                       AND c.node_type = 'COMMENT'
                       AND c.status = 'ACTIVE'
                 )
                 ELSE 0
             END AS comment_count
-        FROM tbl_agora a
+        FROM tb_agora a
         INNER JOIN tb_user u ON u.user_number = a.user_number
         WHERE a.agora_number = #{agoraNumber}
     </select>
@@ -120,7 +120,7 @@
             u.login_id,
             u.name,
             u.role
-        FROM tbl_agora a
+        FROM tb_agora a
         INNER JOIN tb_user u ON u.user_number = a.user_number
         WHERE a.root_agora_number = #{rootAgoraNumber}
           AND a.node_type = 'COMMENT'
@@ -136,18 +136,18 @@
 
     <select id="countAgoraLike" resultType="int">
         SELECT COUNT(*)
-        FROM tbl_agora_like
+        FROM tb_agora_like
         WHERE agora_number = #{agoraNumber}
           AND user_number = #{userNumber}
     </select>
 
     <insert id="insertAgoraLike">
-        INSERT INTO tbl_agora_like (agora_number, user_number)
+        INSERT INTO tb_agora_like (agora_number, user_number)
         VALUES (#{agoraNumber}, #{userNumber})
     </insert>
 
     <update id="increaseLikeCount" parameterType="long">
-        UPDATE tbl_agora
+        UPDATE tb_agora
         SET like_count = like_count + 1
         WHERE agora_number = #{agoraNumber}
     </update>

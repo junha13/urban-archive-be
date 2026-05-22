@@ -18,13 +18,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RecordServiceImpl implements RecordService {
+
+    private static final Set<String> ALLOWED_RECORD_TYPES = Set.of("urban", "major", "extra");
 
     private final RecordDAO dao;
 
@@ -35,8 +39,14 @@ public class RecordServiceImpl implements RecordService {
     @Transactional
     public boolean insertRecord(String loginId, RecordRequest request, MultipartFile file) {
         try {
+            String normalizedType = normalizeRecordType(request.getType());
+            if (normalizedType == null) {
+                return false;
+            }
+
             RecordVO record = new RecordVO();
             record.setUserNumber(findUserNumberByLoginId(loginId));
+            record.setType(normalizedType);
             record.setSubjectNumber(request.getSubjectNumber());
             record.setTitle(request.getTitle());
             record.setDescription(request.getDescription());
@@ -51,7 +61,6 @@ public class RecordServiceImpl implements RecordService {
 
             if (request.getTaggedUserNumbers() != null && !request.getTaggedUserNumbers().isEmpty()) {
                 for (Long targetUserNum : request.getTaggedUserNumbers()) {
-                    // DAO의 insertUserTag(게시글번호, 태그된유저번호)
                     dao.insertUserTag(record.getRecordNumber(), targetUserNum);
                 }
             }
@@ -64,8 +73,16 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public List<RecordDetailResponse> selectRecordList() {
-        List<RecordVO> records = dao.selectRecordList();
+    public List<RecordDetailResponse> selectRecordList(String type) {
+        String normalizedType = normalizeOptionalRecordType(type);
+        if (type != null && normalizedType == null) {
+            return new ArrayList<>();
+        }
+
+        List<RecordVO> records = dao.selectRecordList(normalizedType).stream()
+                .peek(record -> record.setType(normalizeRecordType(record.getType())))
+                .filter(record -> record.getType() != null)
+                .toList();
         if (records.isEmpty()) return new ArrayList<>();
 
         List<Long> ids = records.stream().map(RecordVO::getRecordNumber).toList();
@@ -93,6 +110,11 @@ public class RecordServiceImpl implements RecordService {
             return null;
         }
 
+        record.setType(normalizeRecordType(record.getType()));
+        if (record.getType() == null) {
+            return null;
+        }
+
         List<Long> taggedUserNumbers = dao.selectTaggedUserNumbers(recordNumber);
 
         RecordDetailResponse response = new RecordDetailResponse();
@@ -110,8 +132,13 @@ public class RecordServiceImpl implements RecordService {
             return false;
         }
 
+        String normalizedType = normalizeRecordType(request.getType());
+        if (normalizedType == null) {
+            return false;
+        }
+
         if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
-            throw new AccessDeniedException("본인 기록만 수정할 수 있습니다.");
+            throw new AccessDeniedException("蹂몄씤 湲곕줉留??섏젙?????덉뒿?덈떎.");
         }
 
         if (file != null && !file.isEmpty()) {
@@ -121,6 +148,7 @@ public class RecordServiceImpl implements RecordService {
             record.setFileUrl(uploadFile(file));
         }
 
+        record.setType(normalizedType);
         record.setTitle(request.getTitle());
         record.setDescription(request.getDescription());
         record.setGrade(request.getGrade());
@@ -147,7 +175,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         if (!admin && !record.getUserNumber().equals(findUserNumberByLoginId(loginId))) {
-            throw new AccessDeniedException("본인 기록만 삭제할 수 있습니다.");
+            throw new AccessDeniedException("蹂몄씤 湲곕줉留???젣?????덉뒿?덈떎.");
         }
 
         if (record.getFileUrl() != null) {
@@ -171,7 +199,6 @@ public class RecordServiceImpl implements RecordService {
             return amazonS3.getUrl(bucket, fileName).toString();
 
         } catch (Exception e) {
-            //throw new 커스텀 에러 뱉기;
             return "false";
         }
     }
@@ -179,17 +206,34 @@ public class RecordServiceImpl implements RecordService {
     public void deleteFileFromS3(String fileUrl) {
         try {
             String bucket = dotenv.get("S3_BUCKET_NAME");
-            // URL에서 파일명(Key) 추출 (보통 마지막 / 뒤가 파일명임)
             String key = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
             amazonS3.deleteObject(bucket, key);
         } catch (Exception e) {
-            // 파일 삭제 실패는 로그만 찍고 넘어가도 무방함 (핵심 로직은 아니니까)
             e.printStackTrace();
         }
     }
 
     private Long findUserNumberByLoginId(String loginId) {
         return dao.findUserNumberByLoginId(loginId);
+    }
+
+    private String normalizeOptionalRecordType(String type) {
+        if (type == null || type.isBlank()) {
+            return null;
+        }
+        return normalizeRecordType(type);
+    }
+
+    private String normalizeRecordType(String type) {
+        if (type == null) {
+            return null;
+        }
+
+        String normalizedType = type.trim().toLowerCase(Locale.ROOT);
+        if (!ALLOWED_RECORD_TYPES.contains(normalizedType)) {
+            return null;
+        }
+        return normalizedType;
     }
 
 }

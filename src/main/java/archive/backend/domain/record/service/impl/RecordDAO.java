@@ -10,7 +10,7 @@ public interface RecordDAO {
 
     public int insertRecord(RecordVO record);
 
-    List<RecordVO> selectRecordList();
+    List<RecordVO> selectRecordList(String type);
 
     RecordVO selectRecordDetail(Long recordNumber);
 

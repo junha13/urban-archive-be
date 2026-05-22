@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS tbl_board_like;
-DROP TABLE IF EXISTS tbl_board;
-DROP TABLE IF EXISTS tbl_agora_like;
-DROP TABLE IF EXISTS tbl_agora;
+DROP TABLE IF EXISTS tb_board_like;
+DROP TABLE IF EXISTS tb_board;
+DROP TABLE IF EXISTS tb_agora_like;
+DROP TABLE IF EXISTS tb_agora;
 DROP TABLE IF EXISTS tb_record_tag;
 DROP TABLE IF EXISTS tb_record;
 DROP TABLE IF EXISTS tb_subject;
@@ -47,12 +47,13 @@ CREATE TABLE tb_search_keyword (
 
 CREATE TABLE tb_subject (
     subject_number  SERIAL          PRIMARY KEY,
-    subject_name    VARCHAR(500)    NOT NULL UNIQUE -- 중복 과목명 방지
+    subject_name    VARCHAR(500)    NOT NULL UNIQUE -- 以묐났 怨쇰ぉ紐?諛⑹?
 );
 
 CREATE TABLE tb_record (
     record_number   SERIAL          PRIMARY KEY,
     user_number     INTEGER         NOT NULL,
+    type            VARCHAR(50)     NOT NULL,
     subject_number  INTEGER         NOT NULL,
     title           VARCHAR(255)    NOT NULL,
     description     TEXT,
@@ -81,7 +82,7 @@ CREATE TABLE tb_record_tag (
     CONSTRAINT uq_record_user_tag UNIQUE (record_number, user_number)
 );
 
-CREATE TABLE tbl_agora (
+CREATE TABLE tb_agora (
     agora_number         SERIAL          PRIMARY KEY,
     parent_agora_number  INTEGER         ,
     root_agora_number    INTEGER         ,
@@ -96,9 +97,9 @@ CREATE TABLE tbl_agora (
     updated_at           TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_agora_parent FOREIGN KEY (parent_agora_number)
-    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    REFERENCES tb_agora(agora_number) ON DELETE CASCADE,
     CONSTRAINT fk_agora_root FOREIGN KEY (root_agora_number)
-    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    REFERENCES tb_agora(agora_number) ON DELETE CASCADE,
     CONSTRAINT fk_agora_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT ck_agora_node_type CHECK (node_type IN ('POST', 'COMMENT')),
@@ -117,20 +118,20 @@ CREATE TABLE tbl_agora (
     )
 );
 
-CREATE TABLE tbl_agora_like (
+CREATE TABLE tb_agora_like (
     agora_like_number    SERIAL          PRIMARY KEY,
     agora_number         INTEGER         NOT NULL,
     user_number          INTEGER         NOT NULL,
     created_at           TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_agora_like_agora FOREIGN KEY (agora_number)
-    REFERENCES tbl_agora(agora_number) ON DELETE CASCADE,
+    REFERENCES tb_agora(agora_number) ON DELETE CASCADE,
     CONSTRAINT fk_agora_like_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT uq_agora_like UNIQUE (agora_number, user_number)
 );
 
-CREATE TABLE tbl_board (
+CREATE TABLE tb_board (
     board_number          SERIAL          PRIMARY KEY,
     parent_board_number   INTEGER         ,
     root_board_number     INTEGER         ,
@@ -146,9 +147,9 @@ CREATE TABLE tbl_board (
     updated_at            TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_board_parent FOREIGN KEY (parent_board_number)
-    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    REFERENCES tb_board(board_number) ON DELETE CASCADE,
     CONSTRAINT fk_board_root FOREIGN KEY (root_board_number)
-    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    REFERENCES tb_board(board_number) ON DELETE CASCADE,
     CONSTRAINT fk_board_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT ck_board_node_type CHECK (node_type IN ('POST', 'COMMENT')),
@@ -167,14 +168,14 @@ CREATE TABLE tbl_board (
     )
 );
 
-CREATE TABLE tbl_board_like (
+CREATE TABLE tb_board_like (
     board_like_number     SERIAL          PRIMARY KEY,
     board_number          INTEGER         NOT NULL,
     user_number           INTEGER         NOT NULL,
     created_at            TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_board_like_board FOREIGN KEY (board_number)
-    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    REFERENCES tb_board(board_number) ON DELETE CASCADE,
     CONSTRAINT fk_board_like_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT uq_board_like UNIQUE (board_number, user_number)

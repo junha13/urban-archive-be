@@ -4,7 +4,7 @@
 <mapper namespace="archive.backend.domain.board.service.impl.BoardDAO">
 
     <insert id="insertBoard" parameterType="archive.backend.domain.board.service.BoardVO" useGeneratedKeys="true" keyProperty="boardNumber" keyColumn="board_number">
-        INSERT INTO tbl_board (
+        INSERT INTO tb_board (
             parent_board_number,
             root_board_number,
             board_type,
@@ -48,12 +48,12 @@
             u.role,
             (
                 SELECT COUNT(*)
-                FROM tbl_board c
+                FROM tb_board c
                 WHERE c.root_board_number = b.board_number
                   AND c.node_type = 'COMMENT'
                   AND c.status = 'ACTIVE'
             ) AS comment_count
-        FROM tbl_board b
+        FROM tb_board b
         INNER JOIN tb_user u ON u.user_number = b.user_number
         WHERE b.board_type = #{boardType}
           AND b.node_type = 'POST'
@@ -82,14 +82,14 @@
             CASE
                 WHEN b.node_type = 'POST' THEN (
                     SELECT COUNT(*)
-                    FROM tbl_board c
+                    FROM tb_board c
                     WHERE c.root_board_number = b.board_number
                       AND c.node_type = 'COMMENT'
                       AND c.status = 'ACTIVE'
                 )
                 ELSE 0
             END AS comment_count
-        FROM tbl_board b
+        FROM tb_board b
         INNER JOIN tb_user u ON u.user_number = b.user_number
         WHERE b.board_number = #{boardNumber}
     </select>
@@ -112,7 +112,7 @@
             u.login_id,
             u.name,
             u.role
-        FROM tbl_board b
+        FROM tb_board b
         INNER JOIN tb_user u ON u.user_number = b.user_number
         WHERE b.root_board_number = #{rootBoardNumber}
           AND b.node_type = 'COMMENT'
@@ -128,18 +128,18 @@
 
     <select id="countBoardLike" resultType="int">
         SELECT COUNT(*)
-        FROM tbl_board_like
+        FROM tb_board_like
         WHERE board_number = #{boardNumber}
           AND user_number = #{userNumber}
     </select>
 
     <insert id="insertBoardLike">
-        INSERT INTO tbl_board_like (board_number, user_number)
+        INSERT INTO tb_board_like (board_number, user_number)
         VALUES (#{boardNumber}, #{userNumber})
     </insert>
 
     <update id="increaseLikeCount" parameterType="long">
-        UPDATE tbl_board
+        UPDATE tb_board
         SET like_count = like_count + 1
         WHERE board_number = #{boardNumber}
     </update>

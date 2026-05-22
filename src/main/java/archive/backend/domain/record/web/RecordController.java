@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,8 +31,8 @@ public class RecordController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> selectRecordList() { // 추후 페이지 받기
-        return ResponseEntity.ok(Map.of("result", recordService.selectRecordList()));
+    public ResponseEntity<?> selectRecordList(@RequestParam(value = "type", required = false) String type) {
+        return ResponseEntity.ok(Map.of("result", recordService.selectRecordList(type)));
     }
 
     @GetMapping("/{recordNumber}")

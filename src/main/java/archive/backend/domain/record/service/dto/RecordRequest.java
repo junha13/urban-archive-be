@@ -12,10 +12,11 @@ import java.util.List;
 public class RecordRequest {
 
     private Long userNumber;
+    private String type;
     private Long subjectNumber;
     private String title;
     private String description;
     private Integer grade;
     private String semester;
-    private List<Long> taggedUserNumbers; // 유저 태그 목록
+    private List<Long> taggedUserNumbers; // ?좎? ?쒓렇 紐⑸줉
 }
