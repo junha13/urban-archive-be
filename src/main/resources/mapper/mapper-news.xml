@@ -30,22 +30,30 @@
                 END
     </insert>
 
-    <select id="selectNewsByCategory" parameterType="String" resultType="archive.backend.domain.news.service.NewsVO">
-        SELECT * FROM tb_news
+    <select id="selectNewsList" resultType="archive.backend.domain.news.service.NewsVO">
+        SELECT *
+        FROM tb_news
+        ORDER BY pubDate DESC
+    </select>
+
+    <select id="selectNewsByCategory" resultType="archive.backend.domain.news.service.NewsVO">
+        SELECT *
+        FROM tb_news
         WHERE 1=1
-        <if test="category != '전체'">
+        <if test="category != null and category != '' and category != 'ALL'">
             AND keyword_category ILIKE CONCAT('%', #{category}, '%')
         </if>
         ORDER BY pubDate DESC
     </select>
 
-    <select id="selectNewsBySearchWord" parameterType="String" resultType="archive.backend.domain.news.service.NewsVO">
-        SELECT * FROM tb_news
+    <select id="selectNewsBySearchWord" resultType="archive.backend.domain.news.service.NewsVO">
+        SELECT *
+        FROM tb_news
         WHERE 1=1
           AND (
-            title ILIKE CONCAT('%', #{searchWord}, '%')
-                OR description ILIKE CONCAT('%', #{searchWord}, '%')
-                OR keyword_list ILIKE CONCAT('%', #{searchWord}, '%')
+            title ILIKE CONCAT('%', #{word}, '%')
+                OR description ILIKE CONCAT('%', #{word}, '%')
+                OR keyword_list ILIKE CONCAT('%', #{word}, '%')
             )
         ORDER BY pubDate DESC
     </select>

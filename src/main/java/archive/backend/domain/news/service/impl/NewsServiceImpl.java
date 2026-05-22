@@ -23,25 +23,31 @@ public class NewsServiceImpl implements NewsService {
             news.setKeywordList(keyword.getKeyword());
             news.setKeywordCategory(keyword.getCategory());
             int num = newsDAO.insertNews(news);
-            if (num == 0) log.error("에러 원인 : {}", news);
+            if (num == 0) log.error("?먮윭 ?먯씤 : {}", news);
         }
     }
 
     @Override
-    @Transactional
-    public NewsListResponse selectNewsByCategory(String category) {
+    @Transactional(readOnly = true)
+    public NewsListResponse selectNewsList() {
         NewsListResponse response = new NewsListResponse();
-        response.setItems(newsDAO.selectNewsByCategory(category));
-
+        response.setItems(newsDAO.selectNewsList());
         return response;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
+    public NewsListResponse selectNewsByCategory(String category) {
+        NewsListResponse response = new NewsListResponse();
+        response.setItems(newsDAO.selectNewsByCategory(category));
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public NewsListResponse selectNewsBySearchWord(String word) {
         NewsListResponse response = new NewsListResponse();
         response.setItems(newsDAO.selectNewsBySearchWord(word));
-
         return response;
     }
 }
