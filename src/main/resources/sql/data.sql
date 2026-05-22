@@ -11,10 +11,10 @@ VALUES
     ('캡스톤 디자인'),
     ('디지털트윈 기반 도시설계');
 
-INSERT INTO tb_record (user_number, subject_number, title, description, file_url, grade, semester)
+INSERT INTO tb_record (user_number, subject_number, type, title, description, file_url, grade, semester)
 VALUES
-    (2, 1, '안양 아카이브 데이터베이스 설계도', 'ERD 설계 및 정규화 과정을 기록한 문서입니다.', '', 3, '1학기'),
-    (3, 2, '안양시 유동인구 분석 결과', 'GIS를 활용한 도시 밀집도 분석 자료입니다.', '', 4, '1학기');
+    (2, 1, 'urban','안양 아카이브 데이터베이스 설계도', 'ERD 설계 및 정규화 과정을 기록한 문서입니다.', '', 3, '1학기'),
+    (3, 2, 'urban', '안양시 유동인구 분석 결과', 'GIS를 활용한 도시 밀집도 분석 자료입니다.', '', 4, '1학기');
 
 INSERT INTO tb_record_tag (record_number, user_number)
 VALUES
