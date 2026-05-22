@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS tbl_board_like;
+DROP TABLE IF EXISTS tbl_board;
 DROP TABLE IF EXISTS tbl_agora_like;
 DROP TABLE IF EXISTS tbl_agora;
 DROP TABLE IF EXISTS tb_record_tag;
@@ -126,4 +128,54 @@ CREATE TABLE tbl_agora_like (
     CONSTRAINT fk_agora_like_user FOREIGN KEY (user_number)
     REFERENCES tb_user(user_number) ON DELETE CASCADE,
     CONSTRAINT uq_agora_like UNIQUE (agora_number, user_number)
+);
+
+CREATE TABLE tbl_board (
+    board_number          SERIAL          PRIMARY KEY,
+    parent_board_number   INTEGER         ,
+    root_board_number     INTEGER         ,
+    board_type            VARCHAR(50)     NOT NULL,
+    user_number           INTEGER         NOT NULL,
+    title                 VARCHAR(255)    ,
+    content               TEXT            NOT NULL,
+    node_type             VARCHAR(20)     NOT NULL,
+    depth                 INTEGER         NOT NULL DEFAULT 0,
+    like_count            INTEGER         NOT NULL DEFAULT 0,
+    status                VARCHAR(10)     NOT NULL DEFAULT 'ACTIVE',
+    created_at            TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_board_parent FOREIGN KEY (parent_board_number)
+    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    CONSTRAINT fk_board_root FOREIGN KEY (root_board_number)
+    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    CONSTRAINT fk_board_user FOREIGN KEY (user_number)
+    REFERENCES tb_user(user_number) ON DELETE CASCADE,
+    CONSTRAINT ck_board_node_type CHECK (node_type IN ('POST', 'COMMENT')),
+    CONSTRAINT ck_board_depth CHECK (depth IN (0, 1)),
+    CONSTRAINT ck_board_post_shape CHECK (
+        (node_type = 'POST' AND title IS NOT NULL AND parent_board_number IS NULL AND root_board_number IS NULL AND depth = 0)
+        OR
+        (node_type = 'COMMENT' AND title IS NULL AND root_board_number IS NOT NULL)
+    ),
+    CONSTRAINT ck_board_comment_shape CHECK (
+        node_type = 'POST'
+        OR
+        (depth = 0 AND parent_board_number IS NULL)
+        OR
+        (depth = 1 AND parent_board_number IS NOT NULL)
+    )
+);
+
+CREATE TABLE tbl_board_like (
+    board_like_number     SERIAL          PRIMARY KEY,
+    board_number          INTEGER         NOT NULL,
+    user_number           INTEGER         NOT NULL,
+    created_at            TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_board_like_board FOREIGN KEY (board_number)
+    REFERENCES tbl_board(board_number) ON DELETE CASCADE,
+    CONSTRAINT fk_board_like_user FOREIGN KEY (user_number)
+    REFERENCES tb_user(user_number) ON DELETE CASCADE,
+    CONSTRAINT uq_board_like UNIQUE (board_number, user_number)
 );
